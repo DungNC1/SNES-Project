@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,10 +15,18 @@ public class CarController : MonoBehaviour
     [SerializeField] private Rigidbody2D rb;
 
     public float currentSpeed = 20.0f; 
+    private float originalSpeed = 0;
     private float accelarationInput = 0;
     private float steeringInput = 0;
     private float rotaionAngle = 0;
     private float velocityUp = 0f;
+    
+    private bool isNitroActive = false;
+
+    private void Start()
+    {
+        originalSpeed = currentSpeed;
+    }
 
     private void Update()
     {
@@ -72,7 +81,7 @@ public class CarController : MonoBehaviour
         Vector3 engineForce = transform.up * accelarationInput * accelaration;
         rb.AddForce(engineForce, ForceMode2D.Force);
 
-        Debug.Log($"Current Speed: {currentSpeed}, Velocity: {rb.velocity.magnitude}");
+        Debug.Log($"Current Speed: {currentSpeed}");
     }
 
     private void ApplySteering()
@@ -97,12 +106,17 @@ public class CarController : MonoBehaviour
 
         rb.velocity = forwardVelocity + rightVelocity * drift;
     }
-    
-    public void ModifySpeed(float amount)
-    {
-        currentSpeed += amount;
-        currentSpeed = Mathf.Max(currentSpeed, 0f);
 
-        Debug.Log($"Modified Speed: {currentSpeed}");
+    public void SetNitroSpeed(float nitroSpeed)
+    {
+        currentSpeed += nitroSpeed;
+        isNitroActive = true;
     }
+    
+    public void ResetSpeed()
+    {
+        currentSpeed = originalSpeed; 
+        isNitroActive = false; 
+    }
+    
 }

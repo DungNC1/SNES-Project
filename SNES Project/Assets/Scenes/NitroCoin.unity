@@ -634,12 +634,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09ab81f1336cf1948a1a1184c8e06ad2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 20
+  maxSpeed: 10
   drift: 0.2
   accelaration: 30
   turn: 2.5
   rb: {fileID: 627581533}
-  currentSpeed: 20
+  currentSpeed: 5
 --- !u!50 &627581533
 Rigidbody2D:
   serializedVersion: 4
@@ -1174,7 +1174,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nitroDuration: 5
-  nitroSpeed: 100
+  nitroSpeed: 10
 --- !u!61 &1439914000
 BoxCollider2D:
   m_ObjectHideFlags: 0
