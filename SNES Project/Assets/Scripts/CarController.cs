@@ -20,12 +20,12 @@ public class CarController : MonoBehaviour
 
     private void Update()
     {
-        Vector2 inputVector = Vector2.zero;
+        /*Vector2 inputVector = Vector2.zero;
 
         inputVector.x = Input.GetAxis("Horizontal");
         inputVector.y = Input.GetAxis("Vertical");
 
-        SetInputVector(inputVector);
+        SetInputVector(inputVector);*/
     }
 
     private void FixedUpdate()
@@ -75,7 +75,7 @@ public class CarController : MonoBehaviour
         rb.MoveRotation(rotaionAngle);
     }
 
-    private void SetInputVector(Vector2 _inputVector)
+    public void SetInputVector(Vector2 _inputVector)
     {
         steeringInput = _inputVector.x;
         accelarationInput = _inputVector.y;
