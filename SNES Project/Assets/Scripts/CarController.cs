@@ -16,8 +16,8 @@ public class CarController : MonoBehaviour
 
     public float currentSpeed = 20.0f; 
     private float originalSpeed = 0;
-    private float accelarationInput = 0;
-    private float steeringInput = 0;
+    [HideInInspector] public float accelarationInput = 0;
+    [HideInInspector] public float steeringInput = 0;
     private float rotaionAngle = 0;
     private float velocityUp = 0f;
     

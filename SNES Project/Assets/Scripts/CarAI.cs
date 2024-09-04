@@ -1,27 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using Pathfinding;
+using TMPro;
 using UnityEngine;
 
 public class CarAI : MonoBehaviour
 {
-    private struct structAI
-    {
-        public Transform checkpoints;
-        public int idx;
-        public Vector3 directionSteer;
-        public Quaternion rotationSteer;
-    }
-
-    private structAI ai;
-    [SerializeField] private Transform[] wayPoints;
-    [SerializeField] private CarController carController;
+    [SerializeField] private Transform[] waypoints;
+    [SerializeField] private AIDestinationSetter aIDestination;
+    [SerializeField] private float idxLimit;
+    [SerializeField] private CarController controller;
     Vector3 targetPosition = Vector3.zero;
-
-    private void Start()
-    {
-        ai.checkpoints = GameObject.FindWithTag("Waypoint").transform;
-        ai.idx = 0;
-    }
+    private int idx;
 
     private void FixedUpdate()
     {
@@ -30,39 +20,28 @@ public class CarAI : MonoBehaviour
         inputVector.x = TurnTowardTarget();
         inputVector.y = ApplyThrottOnBrake(inputVector.x);
 
-        carController.SetInputVector(inputVector);
+        controller.SetInputVector(inputVector);
 
         FollowWaypoint();
     }
 
     private void FollowWaypoint()
     {
-        targetPosition = wayPoints[ai.idx].position;
+        targetPosition = waypoints[idx].position;
+        aIDestination.target = waypoints[idx];
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("WaypointChild") == true)
+        if (collision.tag == "WaypointChild")
         {
-            ai.idx = CalcNextCheckpoint();
+            idx += 1;
+
+            if (idx == idxLimit)
+            {
+                idx = 1;
+            }
         }
-    }
-
-    private int CalcNextCheckpoint()
-    {
-        int curr = ExtractNumberFromString(ai.checkpoints.GetChild(ai.idx).name);
-        int next = curr + 1;
-        if (next > ai.checkpoints.childCount - 1)
-            next = 0;
-
-        Debug.Log(string.Format("current checkpoint {0}, next {1}", curr, next));
-
-        return next;
-    }
-
-    private int ExtractNumberFromString(string s1)
-    {
-        return System.Convert.ToInt32(System.Text.RegularExpressions.Regex.Replace(s1, "[^0-9]", ""));
     }
 
     float TurnTowardTarget()
