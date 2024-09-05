@@ -16,35 +16,41 @@ public class CarAI : MonoBehaviour
     [SerializeField] private float detectionRange = 10f;
     [SerializeField] private float aggressiveSpeedMultiplier = 1.5f;
     [SerializeField] private Transform playerTransform;  // Reference to the player's transform
-    [SerializeField] private float lateralPressureAmount = 1f;  // How far left or right the AI will try to move
-    [SerializeField] private float lateralDecisionFrequency = 1f;  // How often AI recalculates lateral movement
+    [SerializeField] private float lateralPressureAmount = 1f;
+    [SerializeField] private float lateralDecisionFrequency = 1f;
     [SerializeField] private float speedAfterCrash;
 
     private Vector3 targetPosition = Vector3.zero;
-    public int idx;
+    private int idx;
     private bool isPushingRight = false;
     private float nextLateralDecisionTime = 0f;
 
+    private Rigidbody rb;  // Reference to the Rigidbody for velocity checks
+
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody>();  // Ensure the AI has a Rigidbody component
+    }
 
     private void FixedUpdate()
     {
-        // Check for player in detection range
-        if (isAggressive && PlayerDetected() && this.idx <= playerTransform.GetComponent<CarAI>().idx)
-        {
-            ApplyPressureToPlayer();
-        }
-        else
-        {
-            FollowWaypoint();
-        }
+            // Normal AI behavior
+            if (isAggressive && PlayerDetected())
+            {
+                ApplyPressureToPlayer();
+            }
+            else
+            {
+                FollowWaypoint();
+            }
 
-        // Calculate AI input
-        Vector2 inputVector = Vector2.zero;
-        inputVector.x = TurnTowardTarget();
-        inputVector.y = ApplyThrottleOnBrake(inputVector.x);
+            // Calculate AI input
+            Vector2 inputVector = Vector2.zero;
+            inputVector.x = TurnTowardTarget();
+            inputVector.y = ApplyThrottleOnBrake(inputVector.x);
 
-        // Apply input to the car controller
-        controller.SetInputVector(inputVector);
+            // Apply input to the car controller
+            controller.SetInputVector(inputVector);
     }
 
     private void FollowWaypoint()
@@ -92,44 +98,32 @@ public class CarAI : MonoBehaviour
 
     private bool PlayerDetected()
     {
-        // Check if the player is within detection range using a simple distance check
         float distanceToPlayer = Vector2.Distance(playerTransform.position, transform.position);
-
-        if (distanceToPlayer <= detectionRange)
-        {
-            return true;
-        }
-        return false;
+        return distanceToPlayer <= detectionRange;
     }
 
     private void ApplyPressureToPlayer()
     {
-        // Determine the relative position of the AI car to the player
         Vector3 toPlayer = playerTransform.position - transform.position;
-        float forwardDot = Vector3.Dot(transform.up, toPlayer.normalized);  // Checks if AI is in front or behind the player
-        float sideDot = Vector3.Dot(transform.right, toPlayer.normalized);  // Checks if AI is to the left or right of the player
+        float forwardDot = Vector3.Dot(transform.up, toPlayer.normalized);  // Front/back relationship
+        float sideDot = Vector3.Dot(transform.right, toPlayer.normalized);  // Left/right relationship
 
-        // Only apply pressure if the AI is next to the player (sideDot > threshold) and not in front or behind (forwardDot near 0)
         if (Mathf.Abs(sideDot) > 0.5f && Mathf.Abs(forwardDot) < 0.5f)
         {
-            // Decide whether to push left or right to apply pressure
             if (Time.time >= nextLateralDecisionTime)
             {
-                isPushingRight = sideDot < 0;  // Push right if the AI is to the left of the player
+                isPushingRight = sideDot < 0;  // Push right if to the left of the player
                 nextLateralDecisionTime = Time.time + lateralDecisionFrequency;
             }
 
-            // Apply lateral pressure based on the decision
             Vector3 offset = isPushingRight ? Vector3.right : Vector3.left;
             offset *= lateralPressureAmount;
 
-            // Set the AI's target to the player's position, adjusted with the lateral offset
             targetPosition = playerTransform.position + offset;
-            aIDestination.target = null;  // Temporarily disable the AIDestination to manually control target
+            aIDestination.target = null;  // Temporarily disable AIDestination to manually control target
         }
         else
         {
-            // If AI is not beside the player, continue with normal behavior (e.g., following waypoints)
             FollowWaypoint();
         }
     }
