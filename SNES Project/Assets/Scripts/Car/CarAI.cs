@@ -1,86 +1,118 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Pathfinding;
 using UnityEngine;
 
 public class CarAI : MonoBehaviour
 {
+    public enum AIMode
+    {
+        Friendly,
+        Agressive,
+        None
+    }
+
     [Header("Waypoints and AI Settings")]
     [SerializeField] private Transform[] waypoints;
     [SerializeField] private AIDestinationSetter aIDestination;
     [SerializeField] private int idxLimit;
     [SerializeField] private CarController controller;
+    [SerializeField] private float minDistanceToReachWaypoint;
+
+    [Header("Behaviour Settings")]
+    [SerializeField] private AIMode aiMode;
 
     [Header("Aggressive Behavior Settings")]
     [SerializeField] private bool isAggressive;
     [SerializeField] private float detectionRange = 10f;
-    [SerializeField] private float aggressiveSpeedMultiplier = 1.5f;
     [SerializeField] private Transform playerTransform;  // Reference to the player's transform
     [SerializeField] private float lateralPressureAmount = 1f;
     [SerializeField] private float lateralDecisionFrequency = 1f;
     [SerializeField] private float speedAfterCrash;
+    [SerializeField] private float minTimeBeforeCheckingCollision = 0.85f;
+
+    [Header("Friendly Behavior Settings")]
+    [SerializeField] private BoxCollider2D boxCollider2D;
 
     private Vector3 targetPosition = Vector3.zero;
-    private int idx;
     private bool isPushingRight = false;
     private float nextLateralDecisionTime = 0f;
+    private bool isColliding;
+    private int idx;
 
-    private Rigidbody rb;  // Reference to the Rigidbody for velocity checks
-
-    private void Start()
-    {
-        rb = GetComponent<Rigidbody>();  // Ensure the AI has a Rigidbody component
-    }
 
     private void FixedUpdate()
     {
-            // Normal AI behavior
-            if (isAggressive && PlayerDetected())
-            {
-                ApplyPressureToPlayer();
-            }
-            else
-            {
-                FollowWaypoint();
-            }
-
-            // Calculate AI input
-            Vector2 inputVector = Vector2.zero;
-            inputVector.x = TurnTowardTarget();
-            inputVector.y = ApplyThrottleOnBrake(inputVector.x);
-
-            // Apply input to the car controller
-            controller.SetInputVector(inputVector);
-    }
-
-    private void FollowWaypoint()
-    {
-        if (idx == idxLimit)
+        switch (aiMode)
         {
-            idx = 0;
+            case (AIMode.None):
+                isAggressive = false;
+                FollowWaypoint();
+                break;
+
+            case (AIMode.Agressive):
+                isAggressive = true;
+
+                if (PlayerDetected() && idx != 0)
+                {
+                    ApplyPressureToPlayer();
+                } else
+                {
+                    FollowWaypoint();
+                }
+                break;
+
+            case (AIMode.Friendly):
+                FollowWaypoint();
+                break;
         }
 
+
+        // Calculate AI input
+        Vector2 inputVector = Vector2.zero;
+        inputVector.x = TurnTowardTarget();
+        inputVector.y = ApplyThrottleOnBrake(inputVector.x);
+
+        // Apply input to the car controller
+        controller.SetInputVector(inputVector);
         targetPosition = waypoints[idx].position;
         aIDestination.target = waypoints[idx];
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void FollowWaypoint()
     {
-        if (collision.CompareTag("WaypointChild"))
+        if(idx == idxLimit)
         {
-            idx += 1;
-
-            if (idx == idxLimit)
-            {
-                idx = 0;
-            }
+            idx = 0;
         }
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.CompareTag("WaypointChild"))
+        {
+            if(!isColliding)
+            {
+                isColliding = true;
+                idx++;
+                StartCoroutine(ResetCollision(minTimeBeforeCheckingCollision));
+            } 
+        }
+    }
+
 
     float TurnTowardTarget()
     {
         Vector2 vectorToTarget = targetPosition - transform.position;
         vectorToTarget.Normalize();
+
+        if(AIMode.Friendly == aiMode)
+        {
+            isAggressive = false;
+
+            AvoidCar(vectorToTarget, out vectorToTarget);
+        }
 
         float angleToTarget = Vector2.SignedAngle(transform.up, vectorToTarget);
         angleToTarget *= -1;
@@ -89,6 +121,49 @@ public class CarAI : MonoBehaviour
         steerAmount = Mathf.Clamp(steerAmount, -1, 1);
 
         return steerAmount;
+    }
+
+    private void AvoidCar(Vector2 vectorToTarget, out Vector2 newVectorToTarget)
+    {
+        if(CarDetection(out Vector3 otherCarPosition, out Vector3 otherCarRightVector))
+        {
+            Vector2 avoidanceVector = Vector2.zero;
+            avoidanceVector = Vector2.Reflect((otherCarPosition - transform.position).normalized, otherCarRightVector);
+
+            float distanceToTarget = (targetPosition - transform.position).magnitude;
+            float driveToTargetInfluence = 6f / distanceToTarget;
+
+            driveToTargetInfluence = Mathf.Clamp(driveToTargetInfluence, 0.3f, 1f);
+
+            float avoidanceInInfuence = 1f - driveToTargetInfluence;
+
+            newVectorToTarget = vectorToTarget * driveToTargetInfluence + avoidanceVector * avoidanceInInfuence;
+            newVectorToTarget.Normalize();
+
+            return;
+        }
+
+        newVectorToTarget = vectorToTarget;
+    }
+
+    private bool CarDetection(out Vector3 position, out Vector3 otherCarRightVector)
+    {
+        //boxCollider2D.enabled = false;
+        RaycastHit2D raycastHit2D = Physics2D.CircleCast(transform.position + transform.up * 0.5f, 1.2f, transform.up, 12, 1 << LayerMask.NameToLayer("AI"));
+        //boxCollider2D.enabled = true;
+
+        if (raycastHit2D.collider != null)
+        {
+            position = raycastHit2D.collider.transform.position;
+            otherCarRightVector = raycastHit2D.collider.transform.right;
+
+            return true;
+        }
+
+        position = Vector3.zero;
+        otherCarRightVector = Vector3.zero;
+
+        return false;
     }
 
     float ApplyThrottleOnBrake(float inputX)
@@ -104,32 +179,27 @@ public class CarAI : MonoBehaviour
 
     private void ApplyPressureToPlayer()
     {
-        Vector3 toPlayer = playerTransform.position - transform.position;
-        float forwardDot = Vector3.Dot(transform.up, toPlayer.normalized);  // Front/back relationship
-        float sideDot = Vector3.Dot(transform.right, toPlayer.normalized);  // Left/right relationship
-
-        if (Mathf.Abs(sideDot) > 0.5f && Mathf.Abs(forwardDot) < 0.5f)
+        // Decide whether to move left or right to apply pressure
+        if (Time.time >= nextLateralDecisionTime)
         {
-            if (Time.time >= nextLateralDecisionTime)
-            {
-                isPushingRight = sideDot < 0;  // Push right if to the left of the player
-                nextLateralDecisionTime = Time.time + lateralDecisionFrequency;
-            }
-
-            Vector3 offset = isPushingRight ? Vector3.right : Vector3.left;
-            offset *= lateralPressureAmount;
-
-            targetPosition = playerTransform.position + offset;
-            aIDestination.target = null;  // Temporarily disable AIDestination to manually control target
+            // Randomly decide to push left or right
+            isPushingRight = Random.value > 0.5f;
+            nextLateralDecisionTime = Time.time + lateralDecisionFrequency;
         }
-        else
-        {
-            FollowWaypoint();
-        }
+
+        // Get the player's position and calculate a target offset to apply pressure
+        Vector3 offset = isPushingRight ? Vector3.right : Vector3.left;
+        offset *= lateralPressureAmount;
+
+        // Set the AI's target to the player's position, adjusted with the lateral offset
+        targetPosition = playerTransform.position + offset;
+        aIDestination.target = null;  // Temporarily disable the AIDestination to manually control target
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        Debug.Log("Collision");
+
         if (collision.gameObject.CompareTag("Player") && isAggressive)
         {
             // Get the player's Rigidbody2D
@@ -141,8 +211,10 @@ public class CarAI : MonoBehaviour
                 Vector2 forceDirection = collision.transform.position - transform.position;
                 forceDirection.Normalize();
 
+                Debug.Log("Collision2");
+
                 // Apply force to the player's Rigidbody2D
-                float forceMagnitude = 500f; // Adjust force magnitude as needed
+                float forceMagnitude = 1000f; // Adjust force magnitude as needed
                 playerRb.AddForce(forceDirection * forceMagnitude, ForceMode2D.Impulse);
 
                 collision.gameObject.GetComponent<CarController>().currentSpeed = speedAfterCrash;
@@ -155,5 +227,11 @@ public class CarAI : MonoBehaviour
     {
         yield return new WaitForSeconds(5f);
         playerTransform.GetComponent<CarController>().currentSpeed = 20;
+    }
+
+    private IEnumerator ResetCollision(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        isColliding = false;
     }
 }
