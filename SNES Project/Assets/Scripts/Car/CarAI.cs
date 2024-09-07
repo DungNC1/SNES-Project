@@ -15,7 +15,6 @@ public class CarAI : MonoBehaviour
 
     [Header("Waypoints and AI Settings")]
     [SerializeField] private Transform[] waypoints;
-    [SerializeField] private AIDestinationSetter aIDestination;
     [SerializeField] private int idxLimit;
     [SerializeField] private CarController controller;
     [SerializeField] private float minDistanceToReachWaypoint;
@@ -77,7 +76,6 @@ public class CarAI : MonoBehaviour
         // Apply input to the car controller
         controller.SetInputVector(inputVector);
         targetPosition = waypoints[idx].position;
-        aIDestination.target = waypoints[idx];
     }
 
     private void FollowWaypoint()
@@ -193,7 +191,6 @@ public class CarAI : MonoBehaviour
 
         // Set the AI's target to the player's position, adjusted with the lateral offset
         targetPosition = playerTransform.position + offset;
-        aIDestination.target = null;  // Temporarily disable the AIDestination to manually control target
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

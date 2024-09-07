@@ -4,13 +4,29 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
+    public enum CameraState
+    {
+        Free,
+        FollowPlayer
+    }
+
     [SerializeField] private Camera cam;
+    [SerializeField] private CameraState cameraState;
+    [SerializeField] private Transform player;
 
     private Vector3 dragOrigin;
 
     private void Update()
     {
-        MoveCamera();
+        switch(cameraState)
+        {
+            case CameraState.Free:
+                MoveCamera();
+                break;
+            case CameraState.FollowPlayer:
+                FollowPlayer();
+                break;
+        }
     }
 
     private void MoveCamera()
@@ -25,5 +41,10 @@ public class CameraMovement : MonoBehaviour
             Vector3 difference = dragOrigin - cam.ScreenToWorldPoint(Input.mousePosition);
             cam.transform.position += difference;
         }
+    }
+
+    private void FollowPlayer()
+    {
+        transform.position = new Vector3(player.position.x, player.position.y, -10f);
     }
 }
