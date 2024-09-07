@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,7 @@ public class ItemPlacer : MonoBehaviour
 {
     public ItemManager itemManager;
     public Camera mainCamera;
+    [SerializeField] private int itemCount = 10;
 
     private ItemInfo selectedItem;
 
@@ -19,9 +21,11 @@ public class ItemPlacer : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && selectedItem != null)
+        if (Input.GetMouseButtonDown(0) && selectedItem != null && itemCount >= 0)
         {
             PlaceItem();
+
+            itemCount--;
         }
     }
 

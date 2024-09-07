@@ -17,7 +17,6 @@ public class CarAI : MonoBehaviour
     [SerializeField] private Transform[] waypoints;
     [SerializeField] private int idxLimit;
     [SerializeField] private CarController controller;
-    [SerializeField] private float minDistanceToReachWaypoint;
 
     [Header("Behaviour Settings")]
     [SerializeField] private AIMode aiMode;
@@ -34,37 +33,57 @@ public class CarAI : MonoBehaviour
     [Header("Friendly Behavior Settings")]
     [SerializeField] private BoxCollider2D boxCollider2D;
 
+    [Header("Coin Settings")]
+    [SerializeField] private float coinDetectionRange = 8f;  // Range at which AI can detect coins
+    [SerializeField] private bool isPlayer = false;
+    [SerializeField] private LayerMask coinLayerMask;  // Layer for coins
+
     private Vector3 targetPosition = Vector3.zero;
     private bool isPushingRight = false;
     private float nextLateralDecisionTime = 0f;
     private bool isColliding;
     private int idx;
 
+    private Transform currentCoinTarget;
+
 
     private void FixedUpdate()
     {
-        switch (aiMode)
+        if (CoinDetected(out Transform coinTransform) && !isPlayer)
         {
-            case (AIMode.None):
-                isAggressive = false;
-                FollowWaypoint();
-                break;
+            // If a coin is detected, prioritize it
+            currentCoinTarget = coinTransform;
+            targetPosition = currentCoinTarget.position;
+        }
+        else
+        {
+            // If no coin is detected, proceed with normal behavior
+            currentCoinTarget = null;
 
-            case (AIMode.Agressive):
-                isAggressive = true;
-
-                if (PlayerDetected() && idx != 0)
-                {
-                    ApplyPressureToPlayer();
-                } else
-                {
+            switch (aiMode)
+            {
+                case AIMode.None:
+                    isAggressive = false;
                     FollowWaypoint();
-                }
-                break;
+                    break;
 
-            case (AIMode.Friendly):
-                FollowWaypoint();
-                break;
+                case AIMode.Agressive:
+                    isAggressive = true;
+
+                    if (PlayerDetected() && idx != 0)
+                    {
+                        ApplyPressureToPlayer();
+                    }
+                    else
+                    {
+                        FollowWaypoint();
+                    }
+                    break;
+
+                case AIMode.Friendly:
+                    FollowWaypoint();
+                    break;
+            }
         }
 
 
@@ -86,6 +105,34 @@ public class CarAI : MonoBehaviour
         }
     }
 
+    private bool CoinDetected(out Transform coinTransform)
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, coinDetectionRange, coinLayerMask);
+
+        if (hits.Length > 0)
+        {
+            // Prioritize the closest coin
+            Transform closestCoin = hits[0].transform;
+            float minDistance = Vector2.Distance(transform.position, closestCoin.position);
+
+            foreach (var hit in hits)
+            {
+                float distance = Vector2.Distance(transform.position, hit.transform.position);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    closestCoin = hit.transform;
+                }
+            }
+
+            coinTransform = closestCoin;
+            return true;
+        }
+
+        coinTransform = null;
+        return false;
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.CompareTag("WaypointChild"))
@@ -96,6 +143,13 @@ public class CarAI : MonoBehaviour
                 idx++;
                 StartCoroutine(ResetCollision(minTimeBeforeCheckingCollision));
             } 
+        }
+
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Coin"))
+        {
+            // Handle coin collection (destroy the coin, add points, etc.)
+            Destroy(collision.gameObject);
+            Debug.Log($"{gameObject.name} collected a coin!");
         }
     }
 

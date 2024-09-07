@@ -11,7 +11,7 @@ public class CameraMovement : MonoBehaviour
     }
 
     [SerializeField] private Camera cam;
-    [SerializeField] private CameraState cameraState;
+    public CameraState cameraState;
     [SerializeField] private Transform player;
 
     private Vector3 dragOrigin;
