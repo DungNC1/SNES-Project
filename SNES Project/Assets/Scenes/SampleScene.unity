@@ -764,6 +764,10 @@ MonoBehaviour:
   cam: {fileID: 519420031}
   cameraState: 0
   player: {fileID: 80871188}
+  minX: -50
+  maxX: 70
+  minY: -45
+  maxY: 25
 --- !u!1001 &555123606
 PrefabInstance:
   m_ObjectHideFlags: 0
