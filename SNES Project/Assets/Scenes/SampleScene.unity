@@ -3193,6 +3193,10 @@ MonoBehaviour:
   - {fileID: 1105424679}
   - {fileID: 2066175249}
   - {fileID: 2108843771}
+  startButton: {fileID: 683623525}
+  itemButtons:
+  - {fileID: 1993559208}
+  - {fileID: 1971824390}
 --- !u!114 &1985498862
 MonoBehaviour:
   m_ObjectHideFlags: 0

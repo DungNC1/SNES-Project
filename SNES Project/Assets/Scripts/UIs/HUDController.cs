@@ -6,9 +6,12 @@ public class HUDController : MonoBehaviour
 {
     [SerializeField] private CameraMovement cam;
     [SerializeField] private CarController[] carControllers;
+    [SerializeField] private GameObject startButton;
+    [SerializeField] private GameObject[] itemButtons;
 
     private void Start()
     {
+
         for (int i = 0; i < carControllers.Length; i++)
         {
             carControllers[i].enabled = false;
@@ -20,11 +23,12 @@ public class HUDController : MonoBehaviour
         Debug.Log("Start");
         cam.cameraState = CameraMovement.CameraState.FollowPlayer;
 
+
         for (int i = 0; i < carControllers.Length; i++)
         {
             carControllers[i].enabled = true;
         }
-
-        gameObject.SetActive(false);
+        
+        startButton.SetActive(false);
     }
 }
