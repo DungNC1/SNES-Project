@@ -31,12 +31,12 @@ public class CameraMovement : MonoBehaviour
 
     private void MoveCamera()
     {
-        if(Input.GetMouseButtonDown(0))
+        if(Input.GetMouseButtonDown(2))
         {
             dragOrigin = cam.ScreenToWorldPoint(Input.mousePosition); 
         }
 
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(2))
         {
             Vector3 difference = dragOrigin - cam.ScreenToWorldPoint(Input.mousePosition);
             cam.transform.position += difference;

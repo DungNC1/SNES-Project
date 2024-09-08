@@ -6,6 +6,7 @@ public class HUDController : MonoBehaviour
 {
     [SerializeField] private CameraMovement cam;
     [SerializeField] private CarController[] carControllers;
+    [SerializeField] private GameObject HUDUI;
 
     private void Start()
     {
@@ -25,6 +26,7 @@ public class HUDController : MonoBehaviour
             carControllers[i].enabled = true;
         }
 
+        HUDUI.SetActive(false);
         gameObject.SetActive(false);
     }
 }
