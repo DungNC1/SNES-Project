@@ -14,6 +14,12 @@ public class CameraMovement : MonoBehaviour
     public CameraState cameraState;
     [SerializeField] private Transform player;
 
+    [Header("Camera Boundaries")]
+    public float minX = -10f;
+    public float maxX = 10f;
+    public float minY = -5f;
+    public float maxY = 5f;
+
     private Vector3 dragOrigin;
 
     private void Update()
@@ -40,11 +46,29 @@ public class CameraMovement : MonoBehaviour
         {
             Vector3 difference = dragOrigin - cam.ScreenToWorldPoint(Input.mousePosition);
             cam.transform.position += difference;
+
+            cam.transform.position = new Vector3(
+                Mathf.Clamp(cam.transform.position.x, minX, maxX),
+                Mathf.Clamp(cam.transform.position.y, minY, maxY),
+                cam.transform.position.z
+            );
         }
     }
 
     private void FollowPlayer()
     {
         transform.position = new Vector3(player.position.x, player.position.y, -10f);
+    }
+
+    private void OnDrawGizmos()
+    {
+        // Set the color for the boundary box
+        Gizmos.color = Color.yellow;
+
+        // Draw a wireframe box representing the camera boundaries
+        Gizmos.DrawWireCube(
+            new Vector3((minX + maxX) / 2f, (minY + maxY) / 2f, 0f),
+            new Vector3(maxX - minX, maxY - minY, 1f)
+        );
     }
 }
