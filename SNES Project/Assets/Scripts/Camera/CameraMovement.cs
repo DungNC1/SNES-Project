@@ -7,7 +7,8 @@ public class CameraMovement : MonoBehaviour
     public enum CameraState
     {
         Free,
-        FollowPlayer
+        FollowPlayer,
+        Lock
     }
 
     [SerializeField] private Camera cam;
@@ -31,6 +32,8 @@ public class CameraMovement : MonoBehaviour
                 break;
             case CameraState.FollowPlayer:
                 FollowPlayer();
+                break;
+            case CameraState.Lock:
                 break;
         }
     }

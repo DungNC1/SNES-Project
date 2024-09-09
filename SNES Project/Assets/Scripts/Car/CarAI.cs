@@ -38,6 +38,9 @@ public class CarAI : MonoBehaviour
     [SerializeField] private bool isPlayer = false;
     [SerializeField] private LayerMask coinLayerMask;  // Layer for coins
 
+    [Header("Effects")]
+    [SerializeField] private Transform cam;
+
     private Vector3 targetPosition = Vector3.zero;
     private bool isPushingRight = false;
     private float nextLateralDecisionTime = 0f;
@@ -99,8 +102,10 @@ public class CarAI : MonoBehaviour
 
     private void FollowWaypoint()
     {
-        if(idx == idxLimit)
+        if (idx == idxLimit)
         {
+            cam.GetComponent<CameraMovement>().cameraState = CameraMovement.CameraState.Free;
+            cam.position = new Vector3(transform.position.x, transform.position.y, -10);
             idx = 0;
         }
     }
@@ -143,6 +148,11 @@ public class CarAI : MonoBehaviour
                 idx++;
                 StartCoroutine(ResetCollision(minTimeBeforeCheckingCollision));
             } 
+
+            if(idx == idxLimit)
+            {
+
+            }
         }
 
         if (collision.gameObject.layer == LayerMask.NameToLayer("Coin"))
