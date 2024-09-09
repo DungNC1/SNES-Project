@@ -3829,6 +3829,7 @@ MonoBehaviour:
   - {fileID: 2066175249}
   - {fileID: 2108843771}
   HUDUI: {fileID: 465073544}
+  itemManager: {fileID: 1875753823}
 --- !u!114 &1985498862
 MonoBehaviour:
   m_ObjectHideFlags: 0

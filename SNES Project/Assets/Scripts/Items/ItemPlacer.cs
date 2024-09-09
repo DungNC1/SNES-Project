@@ -40,13 +40,13 @@ public class ItemPlacer : MonoBehaviour
         nitroText.text = "Nitro: " + nitroCount.ToString();
         coinText.text = "Coin: " + coinCount.ToString();
 
-        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() && coinCount >= 0 && CanPlaceItem())
+        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() && coinCount > 0 && CanPlaceItem())
         {
             SelectItemByIndex(0);
             PlaceItem();
 
             coinCount--;
-        } else if(Input.GetMouseButtonDown(1) && !EventSystem.current.IsPointerOverGameObject() && nitroCount >= 0 && CanPlaceItem())
+        } else if(Input.GetMouseButtonDown(1) && !EventSystem.current.IsPointerOverGameObject() && nitroCount > 0 && CanPlaceItem())
         {
             SelectItemByIndex(1);
             PlaceItem();

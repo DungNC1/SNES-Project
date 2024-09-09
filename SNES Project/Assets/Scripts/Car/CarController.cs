@@ -20,7 +20,11 @@ public class CarController : MonoBehaviour
     [HideInInspector] public float steeringInput = 0;
     private float rotaionAngle = 0;
     private float velocityUp = 0f;
-    
+
+    [Header("Nitro")]
+    [SerializeField] private float nitroDuration = 5.0f;
+    [SerializeField] private float nitroSpeed = 10.0f;
+
     private bool isNitroActive = false;
 
     private void Start()
@@ -36,6 +40,32 @@ public class CarController : MonoBehaviour
         inputVector.y = Input.GetAxis("Vertical");
 
         SetInputVector(inputVector);*/
+    }
+
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        if (collider.CompareTag("Nitro"))
+        {
+                StartCoroutine(ActivateNitro());
+        }
+    }
+
+    private IEnumerator ActivateNitro()
+    {
+        float remainingTime = nitroDuration;
+        SetNitroSpeed(nitroSpeed);
+        /*while (remainingTime > 0)
+        {
+            Debug.Log("nitro duration " + remainingTime);
+            yield return new WaitForSeconds(1.0f);
+            remainingTime -= 1.0f;
+        }*/
+
+        yield return new WaitForSeconds(nitroDuration);
+
+        ResetSpeed();
+
+        //Destroy(gameObject);
     }
 
     private void FixedUpdate()
