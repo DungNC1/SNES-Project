@@ -73,7 +73,7 @@ public class CarAI : MonoBehaviour
                 case AIMode.Agressive:
                     isAggressive = true;
 
-                    if (PlayerDetected() && idx != 0)
+                    if (PlayerDetected() && idx != 0 && !isPlayer)
                     {
                         ApplyPressureToPlayer();
                     }
