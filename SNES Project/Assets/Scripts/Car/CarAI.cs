@@ -287,7 +287,7 @@ public class CarAI : MonoBehaviour
     private IEnumerator ResetSpeed()
     {
         yield return new WaitForSeconds(5f);
-        playerTransform.GetComponent<CarController>().currentSpeed = 20;
+        playerTransform.GetComponent<CarController>().currentSpeed = controller.originalSpeed;
     }
 
     private IEnumerator ResetCollision(float seconds)

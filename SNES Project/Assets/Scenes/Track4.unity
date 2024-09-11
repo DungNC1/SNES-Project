@@ -1601,10 +1601,10 @@ MonoBehaviour:
   cam: {fileID: 519420031}
   cameraState: 0
   player: {fileID: 80871188}
-  minX: -85
-  maxX: 85
-  minY: -75
-  maxY: 75
+  minX: -120
+  maxX: 110
+  minY: -65
+  maxY: 40
 --- !u!4 &535734074 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3580125071067749936, guid: e3e312f5e3467a44789d50befa9335cf, type: 3}

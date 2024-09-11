@@ -14,8 +14,8 @@ public class CarController : MonoBehaviour
     [Header("References")]
     [SerializeField] private Rigidbody2D rb;
 
-    public float currentSpeed = 20.0f; 
-    private float originalSpeed = 0;
+    public float currentSpeed; 
+    public float originalSpeed = 0;
     [HideInInspector] public float accelarationInput = 0;
     [HideInInspector] public float steeringInput = 0;
     private float rotaionAngle = 0;
@@ -46,26 +46,23 @@ public class CarController : MonoBehaviour
     {
         if (collider.CompareTag("Nitro"))
         {
-                StartCoroutine(ActivateNitro());
+                StartCoroutine(ActivateNitro(collider.gameObject));
         }
     }
 
-    private IEnumerator ActivateNitro()
+    private IEnumerator ActivateNitro(GameObject nitro)
     {
+        Destroy(nitro);
         float remainingTime = nitroDuration;
         SetNitroSpeed(nitroSpeed);
-        /*while (remainingTime > 0)
+        while (remainingTime > 0)
         {
             Debug.Log("nitro duration " + remainingTime);
             yield return new WaitForSeconds(1.0f);
             remainingTime -= 1.0f;
-        }*/
-
-        yield return new WaitForSeconds(nitroDuration);
+        }
 
         ResetSpeed();
-
-        //Destroy(gameObject);
     }
 
     private void FixedUpdate()
@@ -140,13 +137,11 @@ public class CarController : MonoBehaviour
     public void SetNitroSpeed(float nitroSpeed)
     {
         currentSpeed += nitroSpeed;
-        isNitroActive = true;
     }
     
     public void ResetSpeed()
     {
         currentSpeed = originalSpeed; 
-        isNitroActive = false; 
     }
     
 }
