@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 6460730986032719671}
   - component: {fileID: 3305781897064407601}
   - component: {fileID: 5750459757071045951}
+  - component: {fileID: 3416317276328385453}
   m_Layer: 6
   m_Name: Car
   m_TagString: Player
@@ -34,7 +35,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -23.75, y: -0.75, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -80,8 +81,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Sprite: {fileID: -769861969, guid: 724a5ece4890b5940805caad10800d70, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -136,8 +137,11 @@ MonoBehaviour:
   turn: 3.5
   rb: {fileID: 4099695408652118576}
   currentSpeed: 20
+  originalSpeed: 0
   accelarationInput: 0
   steeringInput: 0
+  nitroDuration: 5
+  nitroSpeed: 10
 --- !u!61 &3554422912173011342
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -170,7 +174,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.017044067, y: -0.019885212}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -181,7 +185,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.5682068, y: 0.8011481}
   m_EdgeRadius: 0
 --- !u!114 &1358264361326588521
 MonoBehaviour:
@@ -284,6 +288,38 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  aIDestination: {fileID: 3305781897064407601}
   idxLimit: 5
   controller: {fileID: 9002274459069331115}
+  aiMode: 0
+  isAggressive: 0
+  detectionRange: 10
+  playerTransform: {fileID: 0}
+  lateralPressureAmount: 1
+  lateralDecisionFrequency: 1
+  speedAfterCrash: 0
+  minTimeBeforeCheckingCollision: 0.85
+  boxCollider2D: {fileID: 0}
+  coinDetectionRange: 8
+  isPlayer: 0
+  coinLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  cam: {fileID: 0}
+--- !u!114 &3416317276328385453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4237949037375667362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97e8e10b5c1174342ad3d11f851cc012, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  carSprites:
+  - {fileID: -255758252, guid: d38b068dfcf42fd44b3d5649233d9f91, type: 3}
+  - {fileID: -769861969, guid: 724a5ece4890b5940805caad10800d70, type: 3}
+  - {fileID: -1788864217, guid: 0f8d5b06a97792b47afb1987f3b9751b, type: 3}
+  - {fileID: 2070415976, guid: d3327f9c56b316443bb0d99cb18c6a43, type: 3}
+  - {fileID: 1152968020, guid: bbb791a11f7094d4eaa22685d04c7e58, type: 3}

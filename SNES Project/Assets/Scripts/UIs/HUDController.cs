@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class HUDController : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class HUDController : MonoBehaviour
     [SerializeField] private GameObject PlayerField;
     [SerializeField] private GameObject itemManager;
     [SerializeField] private GameObject HUDUI;
+    [SerializeField] private string levelIndex;
 
     private void Start()
     {
@@ -17,6 +19,8 @@ public class HUDController : MonoBehaviour
         {
             carControllers[i].enabled = false;
         }
+
+        PlayerPrefs.SetString(levelIndex, (SceneManager.GetActiveScene().buildIndex - 2).ToString());
     }
 
     public void StartButton()

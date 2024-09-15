@@ -182,6 +182,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57c7edd7fda226c45a3282e6c703c7da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  levelText:
+  - {fileID: 1637563151}
+  - {fileID: 949946908}
+  - {fileID: 416356703}
+  - {fileID: 640823520}
+  - {fileID: 1644781836}
+  - {fileID: 479923932}
+  - {fileID: 654064923}
+  - {fileID: 1881405975}
+  - {fileID: 779474444}
+  - {fileID: 1038080592}
+  - {fileID: 495979528}
 --- !u!114 &209068302
 MonoBehaviour:
   m_ObjectHideFlags: 0
