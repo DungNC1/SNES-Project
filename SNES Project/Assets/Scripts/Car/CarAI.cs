@@ -40,6 +40,7 @@ public class CarAI : MonoBehaviour
 
     [Header("Effects")]
     [SerializeField] private Transform cam;
+    [SerializeField] private GameObject playerText;
 
     private Vector3 targetPosition = Vector3.zero;
     private bool isPushingRight = false;
@@ -49,6 +50,16 @@ public class CarAI : MonoBehaviour
 
     private Transform currentCoinTarget;
 
+    private void OnValidate()
+    {
+        if(isPlayer)
+        {
+            playerText.SetActive(true);
+        } else
+        {
+            playerText.SetActive(false);
+        }
+    }
 
     private void FixedUpdate()
     {
@@ -279,15 +290,16 @@ public class CarAI : MonoBehaviour
                 playerRb.AddForce(forceDirection * forceMagnitude, ForceMode2D.Impulse);
 
                 collision.gameObject.GetComponent<CarController>().currentSpeed = speedAfterCrash;
-                StartCoroutine(ResetSpeed());
+                StartCoroutine(ResetSpeed(collision.gameObject.GetComponent<CarController>()));
             }
         }
     }
 
-    private IEnumerator ResetSpeed()
+    private IEnumerator ResetSpeed(CarController collisionCarController)
     {
         yield return new WaitForSeconds(5f);
-        playerTransform.GetComponent<CarController>().currentSpeed = controller.originalSpeed;
+        collisionCarController.currentSpeed = collisionCarController.originalSpeed;
+        
     }
 
     private IEnumerator ResetCollision(float seconds)

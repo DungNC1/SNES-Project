@@ -12,10 +12,6 @@ public class ItemPlacer : MonoBehaviour
     [SerializeField] private int nitroCount = 10;
     [SerializeField] private int coinCount = 10;
 
-    [Header("Placement Area Bounds")]
-    public Vector2 areaMin = new Vector2(-5f, -5f); 
-    public Vector2 areaMax = new Vector2(5f, 5f);
-
     [Header("Raycasting Settings")]
     public LayerMask placementLayerMask;  // Layer for valid placement areas
     public LayerMask propLayerMask;       // Layer for props that should block placement
@@ -48,6 +44,7 @@ public class ItemPlacer : MonoBehaviour
             coinCount--;
         } else if(Input.GetMouseButtonDown(1) && !EventSystem.current.IsPointerOverGameObject() && nitroCount > 0 && CanPlaceItem())
         {
+            //&& !EventSystem.current.IsPointerOverGameObject()
             SelectItemByIndex(1);
             PlaceItem();
 
