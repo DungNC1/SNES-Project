@@ -23,14 +23,6 @@ public class ItemPlacer : MonoBehaviour
 
     private ItemInfo selectedItem;
 
-    void Start()
-    {
-        if (mainCamera == null)
-        {
-            mainCamera = Camera.main;
-        }
-    }
-
     void Update()
     {
         nitroText.text = "Nitro: " + nitroCount.ToString();
@@ -69,11 +61,24 @@ public class ItemPlacer : MonoBehaviour
         if (selectedItem != null)
         {
             Vector3 mousePosition = Input.mousePosition;
-            mousePosition.z = 10f;  
+            mousePosition.z = mainCamera.nearClipPlane;
             Vector3 worldPosition = mainCamera.ScreenToWorldPoint(mousePosition);
+            worldPosition.z = 10f;
 
             Instantiate(selectedItem.itemPrefab, worldPosition, Quaternion.identity);
-            selectedItem = null;  
+
+            Debug.Log("Placing item at: " + worldPosition);
+
+            if (selectedItem.itemPrefab != null)
+            {
+                Instantiate(selectedItem.itemPrefab, worldPosition, Quaternion.identity);
+            }
+            else
+            {
+                Debug.LogError("Selected item prefab is null!");
+            }
+
+            selectedItem = null;
         }
     }
 

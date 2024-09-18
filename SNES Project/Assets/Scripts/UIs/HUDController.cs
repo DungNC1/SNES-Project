@@ -5,10 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class HUDController : MonoBehaviour
 {
-    [SerializeField] private CameraMovement cam;
+    //[SerializeField] private CameraMovement cam;
     [SerializeField] private CameraMovement miniCam;
     [SerializeField] private CarController[] carControllers;
-    [SerializeField] private GameObject PlayerField;
     [SerializeField] private GameObject itemManager;
     [SerializeField] private GameObject HUDUI;
     [SerializeField] private string levelIndex;
@@ -26,7 +25,7 @@ public class HUDController : MonoBehaviour
     public void StartButton()
     {
         Debug.Log("Start");
-        cam.cameraState = CameraMovement.CameraState.FollowPlayer;
+        //cam.cameraState = CameraMovement.CameraState.FollowPlayer;
         miniCam.cameraState = CameraMovement.CameraState.FollowPlayer;
 
         for (int i = 0; i < carControllers.Length; i++)
@@ -34,8 +33,7 @@ public class HUDController : MonoBehaviour
             carControllers[i].enabled = true;
         }
 
-        PlayerField.SetActive(false);
-        itemManager.SetActive(false);
+        itemManager.SetActive(true);
         HUDUI.SetActive(false);
     }
 }
